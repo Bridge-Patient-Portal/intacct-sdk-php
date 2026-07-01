@@ -1,0 +1,30 @@
+name: Secret scan (gitleaks)
+
+# Phase 0 secret-scanning control (SDLC proposal DC-4, free alternative to GitHub
+# Secret Protection for private repos). Blocks a PR that introduces a secret.
+on:
+  pull_request:
+  workflow_dispatch:   # run a full-history baseline on demand
+
+permissions:
+  contents: read
+
+jobs:
+  gitleaks:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+      - name: Install gitleaks
+        run: |
+          V=$(curl -sSL https://api.github.com/repos/gitleaks/gitleaks/releases/latest | grep -oP '"tag_name":\s*"v\K[^"]+')
+          curl -sSL "https://github.com/gitleaks/gitleaks/releases/download/v${V}/gitleaks_${V}_linux_x64.tar.gz" | tar -xz gitleaks
+          sudo install gitleaks /usr/local/bin/
+          gitleaks version
+      - name: Scan PR commits for secrets
+        if: github.event_name == 'pull_request'
+        run: gitleaks detect --source . --redact --exit-code 1 --log-opts="${{ github.event.pull_request.base.sha }}..${{ github.event.pull_request.head.sha }}"
+      - name: Full-history baseline scan
+        if: github.event_name == 'workflow_dispatch'
+        run: gitleaks detect --source . --redact --exit-code 1
