@@ -1,0 +1,3 @@
+# Changes to CI/CD workflows and repo config need DevOps approval (NFSC-716).
+# Every other path has no owner and keeps the normal review flow.
+/.github/ @Bridge-Patient-Portal/devops
