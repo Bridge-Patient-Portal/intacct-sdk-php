@@ -1,3 +1,6 @@
-# Changes to CI/CD workflows and repo config need DevOps approval (NFSC-716).
+# Changes to CI/CD workflows, repo config and security scanner configs need DevOps approval.
 # Every other path has no owner and keeps the normal review flow.
 /.github/ @Bridge-Patient-Portal/devops
+/.gitleaks.toml @Bridge-Patient-Portal/devops
+/.gitleaksignore @Bridge-Patient-Portal/devops
+/sonar-project.properties @Bridge-Patient-Portal/devops
